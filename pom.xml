@@ -9,8 +9,30 @@
     <packaging>pom</packaging>
     <version>1.0</version>
     <modules>
-        <module>tcp-sdk</module>
+        <module>stage.net</module>
+        <module>stage.common</module>
+        <module>stage.test</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.jtemp.stage</groupId>
+                <artifactId>stage.common</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jtemp.stage</groupId>
+                <artifactId>stage.net</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>4.1.30.Final</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 
 </project>
