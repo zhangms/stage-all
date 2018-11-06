@@ -39,7 +39,7 @@ public abstract class AbstractServer implements Server {
     }
 
     @Override
-    public void start(int listenPort) {
+    public void start(int listenPort) throws Exception {
         if (!running.compareAndSet(false, true)) {
             return;
         }
@@ -56,7 +56,7 @@ public abstract class AbstractServer implements Server {
      *
      * @param listenPort
      */
-    protected abstract void start0(int listenPort);
+    protected abstract void start0(int listenPort) throws Exception;
 
     @Override
     public boolean isRunning() {

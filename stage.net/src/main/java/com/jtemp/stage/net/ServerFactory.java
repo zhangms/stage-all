@@ -8,8 +8,17 @@ import com.jtemp.stage.net.netty.NettyTcpServer;
  */
 public final class ServerFactory {
 
-    public static Server createTcpServerNetty(ServerHandler handler) {
-        return new NettyTcpServer(handler, "TCP-NETTY");
+    /**
+     * 创建服务器
+     *
+     * @param handler
+     * @return
+     */
+    public Server createTcpServer(ServerHandler handler) {
+        return createTcpServerNetty(handler);
     }
 
+    public Server createTcpServerNetty(ServerHandler handler) {
+        return new NettyTcpServer(handler, "TCP-NETTY");
+    }
 }

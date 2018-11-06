@@ -12,7 +12,7 @@ public interface Server {
 
     int clientCount();
 
-    void start(int listenPort);
+    void start(int listenPort) throws Exception;
 
     void stop();
 

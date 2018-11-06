@@ -4,6 +4,7 @@ import com.jtemp.stage.common.thread.NamedThreadFactory;
 import com.jtemp.stage.net.AbstractServer;
 import com.jtemp.stage.net.ServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -23,7 +24,8 @@ public class NettyTcpServer extends AbstractServer {
     }
 
     @Override
-    protected void start0(int listenPort) {
+    protected void start0(int listenPort) throws Exception {
+        final NettyTcpServer _this = this;
         bossEventLoopGroup = new NioEventLoopGroup(0, new NamedThreadFactory(name()));
         ServerBootstrap serverBootstrap = new ServerBootstrap();
         serverBootstrap.group(bossEventLoopGroup, NettyHelper.workerEventLoopGroup())
@@ -38,9 +40,22 @@ public class NettyTcpServer extends AbstractServer {
                     socketChannel.pipeline()
                         .addLast("decoder", new NettyProtocolDecoder())
                         .addLast("encoder", new NettyProtocolEncoder())
-                        .addLast("handler", new NettyProtocolHandler(handler));
+                        .addLast("handler", new NettyProtocolHandler(handler, _this));
                 }
             });
+
+        int retry = 3;
+        while (retry > 0) {
+            ChannelFuture channelFuture = serverBootstrap.bind(listenPort);
+            channelFuture.await();
+            if (channelFuture.isSuccess()) {
+                return;
+            } else {
+                retry--;
+                Thread.sleep(1000);
+            }
+        }
+        stop();
     }
 
     @Override
