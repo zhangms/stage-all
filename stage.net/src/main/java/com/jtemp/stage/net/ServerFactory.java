@@ -1,6 +1,6 @@
 package com.jtemp.stage.net;
 
-import com.jtemp.stage.net.netty.TcpNettyServer;
+import com.jtemp.stage.net.netty.NettyTcpServer;
 
 /**
  * @author ZMS
@@ -9,7 +9,7 @@ import com.jtemp.stage.net.netty.TcpNettyServer;
 public final class ServerFactory {
 
     public static Server createTcpServerNetty(ServerHandler handler) {
-        return new TcpNettyServer(handler, "TCP-NETTY");
+        return new NettyTcpServer(handler, "TCP-NETTY");
     }
 
 }

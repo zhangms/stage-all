@@ -14,11 +14,11 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
  * @author ZMS
  * @Date 2018/10/13 11:53 AM
  */
-public class TcpNettyServer extends AbstractServer {
+public class NettyTcpServer extends AbstractServer {
 
     private NioEventLoopGroup bossEventLoopGroup;
 
-    public TcpNettyServer(ServerHandler handler, String name) {
+    public NettyTcpServer(ServerHandler handler, String name) {
         super(handler, name);
     }
 
@@ -30,10 +30,15 @@ public class TcpNettyServer extends AbstractServer {
             .channel(NioServerSocketChannel.class)
             .option(ChannelOption.ALLOCATOR, NettyHelper.byteBufAllocator())
             .childOption(ChannelOption.ALLOCATOR, NettyHelper.byteBufAllocator())
+            .childOption(ChannelOption.TCP_NODELAY, true)
+            .childOption(ChannelOption.SO_REUSEADDR, true)
             .childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel socketChannel) throws Exception {
-                    socketChannel.pipeline();
+                    socketChannel.pipeline()
+                        .addLast("decoder", new NettyProtocolDecoder())
+                        .addLast("encoder", new NettyProtocolEncoder())
+                        .addLast("handler", new NettyProtocolHandler(handler));
                 }
             });
     }

@@ -1,9 +1,4 @@
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author ZMS
@@ -38,7 +33,10 @@ public class Test {
         //fileWriter.flush();
         //fileWriter.close();
 
-        System.out.println(new Date(1539424800000L));
+        //System.out.println(new Date(1539424800000L));
+
+        Double d = new Double(123.456);
+        System.out.println(d.longValue());
 
     }
 

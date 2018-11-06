@@ -11,7 +11,7 @@ public abstract class AbstractServer implements Server {
     /**
      * 处理器
      */
-    private ServerHandler handler;
+    protected ServerHandler handler;
 
     /**
      * 服务名称
