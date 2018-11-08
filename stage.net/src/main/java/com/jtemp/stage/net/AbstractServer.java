@@ -39,12 +39,23 @@ public abstract class AbstractServer implements Server {
     }
 
     @Override
-    public void start(int listenPort) throws Exception {
-        if (!running.compareAndSet(false, true)) {
-            return;
+    public final void start(int listenPort) throws Exception {
+        if (running.compareAndSet(false, true)) {
+            start0(listenPort);
         }
-        start0(listenPort);
     }
+
+    @Override
+    public final void stop() {
+        if (running.compareAndSet(true, false)) {
+            stop0();
+        }
+    }
+
+    /**
+     * stop impl
+     */
+    protected abstract void stop0();
 
     @Override
     public int listenPort() {

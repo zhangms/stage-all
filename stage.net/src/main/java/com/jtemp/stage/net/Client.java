@@ -6,7 +6,7 @@ package com.jtemp.stage.net;
  */
 public interface Client {
 
-    void connect(NetURL url);
+    void connect(NetURL url) throws NetException;
 
     void close();
 

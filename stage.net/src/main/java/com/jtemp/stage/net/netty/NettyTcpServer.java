@@ -40,7 +40,7 @@ public class NettyTcpServer extends AbstractServer {
                     socketChannel.pipeline()
                         .addLast("decoder", new NettyProtocolDecoder())
                         .addLast("encoder", new NettyProtocolEncoder())
-                        .addLast("handler", new NettyProtocolHandler(handler, _this));
+                        .addLast("handler", new NettyServerHandler(handler, _this));
                 }
             });
 
@@ -64,7 +64,7 @@ public class NettyTcpServer extends AbstractServer {
     }
 
     @Override
-    public void stop() {
-
+    protected void stop0() {
+        bossEventLoopGroup.shutdownGracefully();
     }
 }

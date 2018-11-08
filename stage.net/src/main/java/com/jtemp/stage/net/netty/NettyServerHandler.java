@@ -9,7 +9,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @author ZMS
  * @Date 2018/10/20 4:22 PM
  */
-public class NettyProtocolHandler extends SimpleChannelInboundHandler<NetProtocol> {
+public class NettyServerHandler extends SimpleChannelInboundHandler<NetProtocol> {
 
     private static final String KEY_CONNECTION = "netty:conn";
 
@@ -17,7 +17,7 @@ public class NettyProtocolHandler extends SimpleChannelInboundHandler<NetProtoco
 
     NettyTcpServer nettyTcpServer;
 
-    public NettyProtocolHandler(ServerHandler handler, NettyTcpServer nettyTcpServer) {
+    public NettyServerHandler(ServerHandler handler, NettyTcpServer nettyTcpServer) {
         this.serverHandler = handler;
         this.nettyTcpServer = nettyTcpServer;
     }
