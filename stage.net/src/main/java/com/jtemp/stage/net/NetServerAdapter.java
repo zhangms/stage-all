@@ -132,6 +132,11 @@ public abstract class NetServerAdapter implements NetServer, Runnable {
     }
 
     @Override
+    public int clientCount() {
+        return connections.size();
+    }
+
+    @Override
     public void run() {
         try {
             for (NetConnection connection : connections) {

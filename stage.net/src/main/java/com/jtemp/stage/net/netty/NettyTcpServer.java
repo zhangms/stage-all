@@ -60,11 +60,6 @@ public class NettyTcpServer extends NetServerAdapter {
     }
 
     @Override
-    public int clientCount() {
-        return 0;
-    }
-
-    @Override
     protected void stop0() {
         bossEventLoopGroup.shutdownGracefully();
     }
