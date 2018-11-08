@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author ZMS
  * @Date 2018/10/13 1:26 PM
  */
-public abstract class NetServerAdapter implements NetServer, Runnable {
+public abstract class AbstractNetServer implements NetServer, Runnable {
 
     /**
      * 处理器
@@ -50,7 +50,7 @@ public abstract class NetServerAdapter implements NetServer, Runnable {
      */
     protected Set<NetConnection> connections = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    public NetServerAdapter(NetServerHandler handler, String name) {
+    public AbstractNetServer(NetServerHandler handler, String name) {
         this.handler = handler;
         this.name = name;
         scanner = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory(name, true));

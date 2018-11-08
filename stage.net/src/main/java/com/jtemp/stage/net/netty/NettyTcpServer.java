@@ -2,7 +2,7 @@ package com.jtemp.stage.net.netty;
 
 import com.jtemp.stage.common.thread.NamedThreadFactory;
 import com.jtemp.stage.net.NetException;
-import com.jtemp.stage.net.NetServerAdapter;
+import com.jtemp.stage.net.AbstractNetServer;
 import com.jtemp.stage.net.NetServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -16,7 +16,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
  * @author ZMS
  * @Date 2018/10/13 11:53 AM
  */
-public class NettyTcpServer extends NetServerAdapter {
+public class NettyTcpServer extends AbstractNetServer {
 
     private NioEventLoopGroup bossEventLoopGroup;
 
