@@ -12,6 +12,7 @@
         <module>stage.net</module>
         <module>stage.common</module>
         <module>stage.test</module>
+        <module>stage.log</module>
     </modules>
 
     <dependencyManagement>

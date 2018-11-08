@@ -6,13 +6,13 @@ import com.jtemp.stage.net.netty.NettyClient;
  * @author ZMS
  * @Date 2018/11/6 7:27 PM
  */
-public final class ClientFactory {
+public final class NetClientFactory {
 
-    public static Client createClient(ClientHandler handler) {
+    public static NetClient createClient(NetClientHandler handler) {
         return createClientNetty(handler);
     }
 
-    private static Client createClientNetty(ClientHandler handler) {
+    private static NetClient createClientNetty(NetClientHandler handler) {
         return new NettyClient(handler);
     }
 

@@ -1,6 +1,7 @@
 package com.jtemp.stage.net.netty;
 
-import com.jtemp.stage.net.ClientHandler;
+import com.jtemp.stage.net.NetClientHandler;
+import com.jtemp.stage.net.protocol.NetConnection;
 import com.jtemp.stage.net.protocol.NetProtocol;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -11,12 +12,31 @@ import io.netty.channel.SimpleChannelInboundHandler;
  */
 public class NettyClientHandler extends SimpleChannelInboundHandler<NetProtocol> {
 
-    public NettyClientHandler(ClientHandler handler) {
+    NetClientHandler handler;
 
+    NettyClient client;
+
+    public NettyClientHandler(NetClientHandler handler, NettyClient client) {
+        this.handler = handler;
+        this.client = client;
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, NetProtocol netProtocol) throws Exception {
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, NetProtocol dataPackage) throws Exception {
+        handler.channelRead(client, dataPackage);
+    }
 
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        super.channelActive(ctx);
+        NetConnection connection = new NettyConnection(ctx.channel());
+        client.setConnection(connection);
+        handler.channelActive(client);
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        super.channelInactive(ctx);
+        handler.channelInactive(client);
     }
 }

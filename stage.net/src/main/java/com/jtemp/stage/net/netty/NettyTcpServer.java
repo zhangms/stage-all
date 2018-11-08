@@ -1,8 +1,8 @@
 package com.jtemp.stage.net.netty;
 
 import com.jtemp.stage.common.thread.NamedThreadFactory;
-import com.jtemp.stage.net.AbstractServer;
-import com.jtemp.stage.net.ServerHandler;
+import com.jtemp.stage.net.NetServerAdapter;
+import com.jtemp.stage.net.NetServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -11,15 +11,17 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
+import java.net.InetSocketAddress;
+
 /**
  * @author ZMS
  * @Date 2018/10/13 11:53 AM
  */
-public class NettyTcpServer extends AbstractServer {
+public class NettyTcpServer extends NetServerAdapter {
 
     private NioEventLoopGroup bossEventLoopGroup;
 
-    public NettyTcpServer(ServerHandler handler, String name) {
+    public NettyTcpServer(NetServerHandler handler, String name) {
         super(handler, name);
     }
 
@@ -46,7 +48,7 @@ public class NettyTcpServer extends AbstractServer {
 
         int retry = 3;
         while (retry > 0) {
-            ChannelFuture channelFuture = serverBootstrap.bind(listenPort);
+            ChannelFuture channelFuture = serverBootstrap.bind(new InetSocketAddress("127.0.0.1", 8080));
             channelFuture.await();
             if (channelFuture.isSuccess()) {
                 return;

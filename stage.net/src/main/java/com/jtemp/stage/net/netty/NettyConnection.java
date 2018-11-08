@@ -1,8 +1,10 @@
 package com.jtemp.stage.net.netty;
 
 import com.jtemp.stage.net.protocol.NetConnection;
+import com.jtemp.stage.net.protocol.NetProtocol;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerAdapter;
-import io.netty.channel.ChannelHandlerContext;
 
 /**
  * @author ZMS
@@ -10,14 +12,27 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class NettyConnection extends ChannelHandlerAdapter implements NetConnection {
 
-    ChannelHandlerContext channelHandlerContext;
+    Channel channel;
 
-    public NettyConnection(ChannelHandlerContext ctx) {
-        this.channelHandlerContext = ctx;
+    ChannelFutureListener writeListener = channelFuture -> {
+        if (!channelFuture.isSuccess()) {
+            if (!channel.isActive()) {
+                channel.close();
+            }
+        }
+    };
+
+    public NettyConnection(Channel channel) {
+        this.channel = channel;
     }
 
     @Override
     public void close() {
-        this.channelHandlerContext.close();
+        channel.close();
+    }
+
+    @Override
+    public void send(NetProtocol dataPackage) {
+        channel.writeAndFlush(dataPackage).addListener(writeListener);
     }
 }

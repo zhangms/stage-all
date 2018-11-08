@@ -7,7 +7,7 @@ import com.jtemp.stage.net.protocol.NetProtocol;
  * @author ZMS
  * @Date 2018/10/13 11:55 AM
  */
-public interface ServerHandler {
+public interface NetServerHandler {
 
     /**
      * 读

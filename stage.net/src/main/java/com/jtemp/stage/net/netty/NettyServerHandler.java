@@ -1,6 +1,6 @@
 package com.jtemp.stage.net.netty;
 
-import com.jtemp.stage.net.ServerHandler;
+import com.jtemp.stage.net.NetServerHandler;
 import com.jtemp.stage.net.protocol.NetProtocol;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -13,11 +13,11 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<NetProtocol>
 
     private static final String KEY_CONNECTION = "netty:conn";
 
-    ServerHandler serverHandler;
+    NetServerHandler serverHandler;
 
     NettyTcpServer nettyTcpServer;
 
-    public NettyServerHandler(ServerHandler handler, NettyTcpServer nettyTcpServer) {
+    public NettyServerHandler(NetServerHandler handler, NettyTcpServer nettyTcpServer) {
         this.serverHandler = handler;
         this.nettyTcpServer = nettyTcpServer;
     }
@@ -31,7 +31,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<NetProtocol>
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
-        NettyConnection connection = new NettyConnection(ctx);
+        NettyConnection connection = new NettyConnection(ctx.channel());
         ctx.pipeline().addFirst(KEY_CONNECTION, connection);
         serverHandler.channelActive(connection);
     }

@@ -7,7 +7,7 @@ import java.util.Map;
  * @author ZMS
  * @Date 2018/10/13 11:42 AM
  */
-public class NetURL {
+public class NetUrl {
 
     /**
      * server address
@@ -28,7 +28,7 @@ public class NetURL {
         return host;
     }
 
-    public NetURL setHost(String host) {
+    public NetUrl setHost(String host) {
         this.host = host;
         return this;
     }
@@ -37,7 +37,7 @@ public class NetURL {
         return port;
     }
 
-    public NetURL setPort(int port) {
+    public NetUrl setPort(int port) {
         this.port = port;
         return this;
     }
@@ -46,7 +46,11 @@ public class NetURL {
         return parameters;
     }
 
-    public NetURL setParameters(String key, String value) {
+    public int getParameter(String key, int defaultValue) {
+        return 0;
+    }
+
+    public NetUrl setParameters(String key, String value) {
         if (key == null) {
             return this;
         }

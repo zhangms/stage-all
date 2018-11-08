@@ -6,6 +6,16 @@ package com.jtemp.stage.net.protocol;
  */
 public interface NetConnection {
 
+    /**
+     * 关闭链接
+     */
     void close();
+
+    /**
+     * 发送数据包
+     *
+     * @param dataPackage
+     */
+    void send(NetProtocol dataPackage);
 
 }

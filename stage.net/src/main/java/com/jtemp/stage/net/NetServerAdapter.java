@@ -6,12 +6,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author ZMS
  * @Date 2018/10/13 1:26 PM
  */
-public abstract class AbstractServer implements Server {
+public abstract class NetServerAdapter implements NetServer {
 
     /**
      * 处理器
      */
-    protected ServerHandler handler;
+    protected NetServerHandler handler;
 
     /**
      * 服务名称
@@ -28,7 +28,7 @@ public abstract class AbstractServer implements Server {
      */
     protected AtomicBoolean running = new AtomicBoolean();
 
-    public AbstractServer(ServerHandler handler, String name) {
+    public NetServerAdapter(NetServerHandler handler, String name) {
         this.handler = handler;
         this.name = name;
     }
