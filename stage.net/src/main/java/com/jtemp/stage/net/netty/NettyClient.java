@@ -5,6 +5,7 @@ import com.jtemp.stage.net.protocol.NetConnection;
 import com.jtemp.stage.net.protocol.NetProtocol;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.SocketChannel;
@@ -57,17 +58,29 @@ public class NettyClient implements NetClient {
                 }
             });
 
-        int connectTimeout = url.getParameter(NetConstants.KEY_CONNECT_TIMEOUT, NetConstants.DEF_CONNECTION_TIME);
+        int connectTimeout = url.getParameter(NetConstants.KEY_CONNECT_TIMEOUT, NetConstants.DEF_CONNECTION_TIMEOUT);
         bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeout);
 
         ChannelFuture future = bootstrap.connect(url.getHost(), url.getPort());
-        if (future.awaitUninterruptibly(connectTimeout) && future.isSuccess() && future.channel().isActive()) {
-            return;
+
+        boolean sync = url.getParameter(NetConstants.KEY_CONNECT_SYNC, NetConstants.DEF_CONNECTION_SYNC);
+        if (sync) {
+            if (future.awaitUninterruptibly(connectTimeout) && future.isSuccess() && future.channel().isActive()) {
+                return;
+            } else {
+                future.cancel(true);
+                future.channel().close();
+                connected.set(false);
+                throw new NetException("netty client connect failed:" + url.toString());
+            }
         } else {
-            future.cancel(true);
-            future.channel().close();
-            connected.set(false);
-            throw new NetException("netty client connect failed:" + url.toString());
+            future.addListener((ChannelFutureListener)future1 -> {
+                if (future1.isSuccess() && future1.channel().isActive()) {
+                    return;
+                }
+                _this.close();
+                throw new NetException("netty client connect failed:" + url.toString());
+            });
         }
     }
 
@@ -91,7 +104,7 @@ public class NettyClient implements NetClient {
 
     @Override
     public void send(NetProtocol dataPackage) {
-        if(connected.get() && connection != null) {
+        if (connected.get() && connection != null) {
             connection.send(dataPackage);
         }
     }

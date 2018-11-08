@@ -3,7 +3,7 @@ package test;
 import com.jtemp.stage.net.NetServer;
 import com.jtemp.stage.net.NetServerFactory;
 import com.jtemp.stage.net.NetServerHandler;
-import com.jtemp.stage.net.netty.NettyConnection;
+import com.jtemp.stage.net.protocol.NetConnection;
 import com.jtemp.stage.net.protocol.NetProtocol;
 import com.jtemp.stage.net.protocol.NetProtocolManager;
 
@@ -19,25 +19,27 @@ public class NetServerTester {
 
         NetServer netServer = NetServerFactory.createTcpServer(new NetServerHandler() {
             @Override
-            public void channelRead(NettyConnection connection, NetProtocol dataPackage) {
-                System.out.println(dataPackage.toString());
+            public void channelRead(NetConnection connection, NetProtocol dataPackage) {
+                if (dataPackage instanceof PingPackage) {
+                    PingPackage pingPackage = (PingPackage)dataPackage;
+                    pingPackage.setT1(System.currentTimeMillis());
+                    connection.send(pingPackage);
+                }
             }
 
             @Override
-            public void channelActive(NettyConnection connection) {
-
+            public void channelActive(NetConnection connection) {
+                System.out.println("active:" + connection);
             }
 
             @Override
-            public void channelInactive(NettyConnection connection) {
-
+            public void channelInactive(NetConnection connection) {
+                System.out.println("inactive:" + connection);
             }
         });
-        netServer.start(8080);
+        netServer.start(null, 8080);
         System.out.println("server is running ? " + netServer.isRunning());
-        while (true) {
-            Thread.sleep(1000);
-        }
+
     }
 
 }

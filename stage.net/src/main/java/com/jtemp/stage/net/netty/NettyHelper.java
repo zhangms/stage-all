@@ -15,6 +15,7 @@ import io.netty.util.internal.SystemPropertyUtil;
 public final class NettyHelper {
 
     private static final String SYS_NETTY_WORKER_COUNT = "netty.workers";
+    private static final String SYS_NETTY_DAEMON = "netty.daemon";
     private static final String SYS_NETTY_BYTEBUF_POOLED = "netty.bytebuf.pooled";
 
     private static EventLoopGroup workerEventLoopGroup;
@@ -23,13 +24,18 @@ public final class NettyHelper {
 
     static synchronized EventLoopGroup workerEventLoopGroup() {
         if (workerEventLoopGroup == null) {
-            workerEventLoopGroup = new NioEventLoopGroup(workerThreadsCount(), new NamedThreadFactory("netty-worker"));
+            workerEventLoopGroup = new NioEventLoopGroup(workerThreadsCount(),
+                new NamedThreadFactory("netty-worker", isDaemon()));
         }
         return workerEventLoopGroup;
     }
 
     private static int workerThreadsCount() {
         return SystemPropertyUtil.getInt(SYS_NETTY_WORKER_COUNT, Runtime.getRuntime().availableProcessors() * 2);
+    }
+
+    public static boolean isDaemon() {
+        return SystemPropertyUtil.getBoolean(SYS_NETTY_DAEMON, false);
     }
 
     static synchronized ByteBufAllocator byteBufAllocator() {

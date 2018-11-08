@@ -1,6 +1,6 @@
 package com.jtemp.stage.net;
 
-import com.jtemp.stage.net.netty.NettyConnection;
+import com.jtemp.stage.net.protocol.NetConnection;
 import com.jtemp.stage.net.protocol.NetProtocol;
 
 /**
@@ -15,9 +15,9 @@ public interface NetServerHandler {
      * @param connection
      * @param dataPackage
      */
-    void channelRead(NettyConnection connection, NetProtocol dataPackage);
+    void channelRead(NetConnection connection, NetProtocol dataPackage);
 
-    void channelActive(NettyConnection connection);
+    void channelActive(NetConnection connection);
 
-    void channelInactive(NettyConnection connection);
+    void channelInactive(NetConnection connection);
 }

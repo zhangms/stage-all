@@ -22,7 +22,7 @@ public class NetUrl {
     /**
      * server params
      */
-    private Map<String, String> parameters = new HashMap<>();
+    private Map<String, Object> parameters = new HashMap<>();
 
     public String getHost() {
         return host;
@@ -42,15 +42,21 @@ public class NetUrl {
         return this;
     }
 
-    public Map<String, String> getParameters() {
+    public Map<String, Object> getParameters() {
         return parameters;
     }
 
     public int getParameter(String key, int defaultValue) {
-        return 0;
+        Object val = parameters.get(key);
+        return val == null ? defaultValue : Integer.parseInt(val.toString());
     }
 
-    public NetUrl setParameters(String key, String value) {
+    public boolean getParameter(String key, boolean defaultValue) {
+        Object val = parameters.get(key);
+        return val == null ? defaultValue : Boolean.parseBoolean(val.toString());
+    }
+
+    public NetUrl setParameters(String key, Object value) {
         if (key == null) {
             return this;
         }

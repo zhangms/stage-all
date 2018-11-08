@@ -19,7 +19,7 @@ public class NamedThreadFactory implements ThreadFactory {
     }
 
     public NamedThreadFactory(String name) {
-        this(name, true);
+        this(name, false);
     }
 
     public NamedThreadFactory(String prefix, boolean daemon) {

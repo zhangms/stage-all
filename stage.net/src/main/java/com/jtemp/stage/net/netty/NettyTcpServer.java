@@ -1,6 +1,7 @@
 package com.jtemp.stage.net.netty;
 
 import com.jtemp.stage.common.thread.NamedThreadFactory;
+import com.jtemp.stage.net.NetException;
 import com.jtemp.stage.net.NetServerAdapter;
 import com.jtemp.stage.net.NetServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
@@ -10,8 +11,6 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-
-import java.net.InetSocketAddress;
 
 /**
  * @author ZMS
@@ -26,9 +25,9 @@ public class NettyTcpServer extends NetServerAdapter {
     }
 
     @Override
-    protected void start0(int listenPort) throws Exception {
+    protected void start0() throws Exception {
         final NettyTcpServer _this = this;
-        bossEventLoopGroup = new NioEventLoopGroup(0, new NamedThreadFactory(name()));
+        bossEventLoopGroup = new NioEventLoopGroup(1, new NamedThreadFactory(name(), NettyHelper.isDaemon()));
         ServerBootstrap serverBootstrap = new ServerBootstrap();
         serverBootstrap.group(bossEventLoopGroup, NettyHelper.workerEventLoopGroup())
             .channel(NioServerSocketChannel.class)
@@ -45,10 +44,9 @@ public class NettyTcpServer extends NetServerAdapter {
                         .addLast("handler", new NettyServerHandler(handler, _this));
                 }
             });
-
         int retry = 3;
         while (retry > 0) {
-            ChannelFuture channelFuture = serverBootstrap.bind(new InetSocketAddress("127.0.0.1", 8080));
+            ChannelFuture channelFuture = serverBootstrap.bind(getBindAddress());
             channelFuture.await();
             if (channelFuture.isSuccess()) {
                 return;
@@ -58,6 +56,7 @@ public class NettyTcpServer extends NetServerAdapter {
             }
         }
         stop();
+        throw new NetException("netty tcp server can't be start : " + bindHost + ":" + listenPort);
     }
 
     @Override

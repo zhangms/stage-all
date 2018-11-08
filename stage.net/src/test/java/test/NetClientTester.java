@@ -11,8 +11,8 @@ import com.jtemp.stage.net.protocol.NetProtocolManager;
  */
 public class NetClientTester {
 
-    public static void main(String[] args) throws NetException {
-
+    public static void main(String[] args) throws NetException, InterruptedException {
+        //
         NetProtocolManager.regiester(PingPackage.COMMAND_ID, PingPackage.class);
 
         NetClient client = NetClientFactory.createClient(new NetClientHandler() {
@@ -28,11 +28,12 @@ public class NetClientTester {
 
             @Override
             public void channelRead(NettyClient client, NetProtocol dataPackage) {
-
+                System.out.println(dataPackage);
             }
         });
 
-        client.connect(new NetUrl().setHost("127.0.0.1").setPort(8080));
+        client.connect(new NetUrl().setHost("127.0.0.1").setPort(8080)
+            .setParameters(NetConstants.KEY_CONNECT_SYNC, false));
 
         while (true) {
             client.send(new PingPackage());
@@ -42,7 +43,6 @@ public class NetClientTester {
                 e.printStackTrace();
             }
         }
-
     }
 
 }

@@ -23,6 +23,8 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<NetProtocol>
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, NetProtocol dataPackage) throws Exception {
+        NettyConnection conn = (NettyConnection)client.getConnection();
+        conn.setLastReceiveAt(System.currentTimeMillis());
         handler.channelRead(client, dataPackage);
     }
 

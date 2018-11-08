@@ -14,7 +14,8 @@ public class PingPackage implements NetProtocol {
 
     public static final int COMMAND_ID = 0x0001;
 
-    long time = System.currentTimeMillis();
+    long t0 = System.currentTimeMillis();
+    long t1 = System.currentTimeMillis();
 
     @Override
     public int getCommandId() {
@@ -23,16 +24,36 @@ public class PingPackage implements NetProtocol {
 
     @Override
     public void encode(ByteBufferWrapper wrapper) {
-        wrapper.writeLong(time);
+        wrapper.writeLong(t0);
+        wrapper.writeLong(t1);
     }
 
     @Override
     public void decode(NettyByteBufferWrapper wrapper) {
-        time = wrapper.readLong();
+        t0 = wrapper.readLong();
+        t1 = wrapper.readLong();
+    }
+
+    public long getT0() {
+        return t0;
+    }
+
+    public PingPackage setT0(long t0) {
+        this.t0 = t0;
+        return this;
+    }
+
+    public long getT1() {
+        return t1;
+    }
+
+    public PingPackage setT1(long t1) {
+        this.t1 = t1;
+        return this;
     }
 
     @Override
     public String toString() {
-        return "[ping]" + new Date(time);
+        return "[ping]" + new Date(t0) + "|" + new Date(t1) + "|" + (t1 - t0) + "(ms)";
     }
 }

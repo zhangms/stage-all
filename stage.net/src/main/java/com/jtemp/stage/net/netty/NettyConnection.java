@@ -12,6 +12,10 @@ import io.netty.channel.ChannelHandlerAdapter;
  */
 public class NettyConnection extends ChannelHandlerAdapter implements NetConnection {
 
+    long lastReceiveAt = System.currentTimeMillis();
+
+    long lastSendAt = System.currentTimeMillis();
+
     Channel channel;
 
     ChannelFutureListener writeListener = channelFuture -> {
@@ -21,6 +25,10 @@ public class NettyConnection extends ChannelHandlerAdapter implements NetConnect
             }
         }
     };
+
+    public Channel getChannel() {
+        return channel;
+    }
 
     public NettyConnection(Channel channel) {
         this.channel = channel;
@@ -33,6 +41,28 @@ public class NettyConnection extends ChannelHandlerAdapter implements NetConnect
 
     @Override
     public void send(NetProtocol dataPackage) {
-        channel.writeAndFlush(dataPackage).addListener(writeListener);
+        if (channel != null) {
+            lastSendAt = System.currentTimeMillis();
+            channel.writeAndFlush(dataPackage).addListener(writeListener);
+        }
+    }
+
+    @Override
+    public boolean isActive() {
+        return channel != null && channel.isActive();
+    }
+
+    @Override
+    public long getLastReceiveAt() {
+        return lastReceiveAt;
+    }
+
+    public void setLastReceiveAt(long timeMillis) {
+        this.lastReceiveAt = timeMillis;
+    }
+
+    @Override
+    public String toString() {
+        return channel == null ? super.toString() : channel.toString();
     }
 }

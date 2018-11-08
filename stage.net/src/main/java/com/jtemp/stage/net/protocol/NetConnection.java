@@ -18,4 +18,12 @@ public interface NetConnection {
      */
     void send(NetProtocol dataPackage);
 
+    boolean isActive();
+
+    /**
+     * 上一次读包时间
+     *
+     * @return
+     */
+    long getLastReceiveAt();
 }
