@@ -1,17 +1,14 @@
 package com.jtemp.stage.net.netty;
 
+import com.jtemp.stage.net.NetConstants;
 import com.jtemp.stage.net.protocol.ByteBufferWrapper;
 import io.netty.buffer.ByteBuf;
-
-import java.nio.charset.Charset;
 
 /**
  * @author ZMS
  * @Date 2018/11/6 2:12 PM
  */
 public class NettyByteBufferWrapper implements ByteBufferWrapper {
-
-    private static Charset UTF8 = Charset.forName("UTF-8");
 
     public static NettyByteBufferWrapper wrap(ByteBuf byteBuf) {
         return new NettyByteBufferWrapper(byteBuf);
@@ -100,7 +97,7 @@ public class NettyByteBufferWrapper implements ByteBufferWrapper {
 
     @Override
     public void writeUTF(String data) {
-        byte[] bytes = data.getBytes(UTF8);
+        byte[] bytes = data.getBytes(NetConstants.UTF8);
         byteBuf.writeInt(bytes.length);
         byteBuf.writeBytes(bytes);
     }
@@ -110,7 +107,7 @@ public class NettyByteBufferWrapper implements ByteBufferWrapper {
         int length = byteBuf.readInt();
         byte[] bytes = new byte[length];
         byteBuf.readBytes(bytes);
-        return new String(bytes, UTF8);
+        return new String(bytes, NetConstants.UTF8);
     }
 
     @Override
