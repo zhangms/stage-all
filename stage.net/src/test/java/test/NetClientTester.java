@@ -5,6 +5,8 @@ import com.jtemp.stage.net.netty.NettyClient;
 import com.jtemp.stage.net.protocol.NetProtocol;
 import com.jtemp.stage.net.protocol.NetProtocolManager;
 
+import java.util.concurrent.Future;
+
 /**
  * @author ZMS
  * @Date 2018/11/8 2:22 PM
@@ -16,6 +18,11 @@ public class NetClientTester {
         NetProtocolManager.regiester(PingPackage.COMMAND_ID, PingPackage.class);
 
         NetClient client = NetClientFactory.createClient(new NetClientHandler() {
+            @Override
+            public Future<NetProtocol> wrapRequestFuture(NetProtocol dataPackage) {
+                return null;
+            }
+
             @Override
             public void channelActive(NettyClient client) {
 

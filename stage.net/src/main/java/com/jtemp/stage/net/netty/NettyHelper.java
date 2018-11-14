@@ -35,7 +35,7 @@ public final class NettyHelper {
     }
 
     public static boolean isDaemon() {
-        return SystemPropertyUtil.getBoolean(SYS_NETTY_DAEMON, false);
+        return SystemPropertyUtil.getBoolean(SYS_NETTY_DAEMON, true);
     }
 
     static synchronized ByteBufAllocator byteBufAllocator() {

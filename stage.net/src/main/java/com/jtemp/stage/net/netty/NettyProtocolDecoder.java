@@ -20,22 +20,26 @@ public class NettyProtocolDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list)
         throws Exception {
-        if (byteBuf.readableBytes() < LENGTH_BYTES) {
-            return;
+        try {
+            if (byteBuf.readableBytes() < LENGTH_BYTES) {
+                return;
+            }
+            byteBuf.markReaderIndex();
+            int length = byteBuf.readInt();
+            if (byteBuf.readableBytes() < length) {
+                byteBuf.resetReaderIndex();
+                return;
+            }
+            int commandId = byteBuf.readInt();
+            NetProtocol protocol = NetProtocolManager.createProtocol(commandId);
+            if (protocol == null) {
+                channelHandlerContext.close();
+                throw new NetException("protocol not exists: " + Integer.toHexString(commandId));
+            }
+            protocol.decode(NettyByteBufferWrapper.wrap(byteBuf));
+            list.add(protocol);
+        } catch (Exception e) {
+            throw new NetException("decode error", e);
         }
-        byteBuf.markReaderIndex();
-        int length = byteBuf.readInt();
-        if (byteBuf.readableBytes() < length) {
-            byteBuf.resetReaderIndex();
-            return;
-        }
-        int commandId = byteBuf.readInt();
-        NetProtocol protocol = NetProtocolManager.createProtocol(commandId);
-        if (protocol == null) {
-            channelHandlerContext.close();
-            throw new NetException("protocol not exists: " + Integer.toHexString(commandId));
-        }
-        protocol.decode(NettyByteBufferWrapper.wrap(byteBuf));
-        list.add(protocol);
     }
 }

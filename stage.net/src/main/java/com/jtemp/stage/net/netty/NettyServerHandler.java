@@ -32,7 +32,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<NetProtocol>
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
-        NettyConnection connection = new NettyConnection(ctx.channel());
+        NettyConnection connection = new NettyConnection(ctx.channel(), serverHandler);
         ctx.pipeline().addFirst(KEY_CONNECTION, connection);
         nettyTcpServer.channelActive(connection);
     }
@@ -42,5 +42,11 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<NetProtocol>
         super.channelInactive(ctx);
         NettyConnection connection = (NettyConnection)ctx.pipeline().remove(KEY_CONNECTION);
         nettyTcpServer.channelInactive(connection);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        super.exceptionCaught(ctx, cause);
+        cause.printStackTrace();
     }
 }

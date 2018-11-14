@@ -1,8 +1,8 @@
 package com.jtemp.stage.net.netty;
 
 import com.jtemp.stage.common.thread.NamedThreadFactory;
-import com.jtemp.stage.net.NetException;
 import com.jtemp.stage.net.AbstractNetServer;
+import com.jtemp.stage.net.NetException;
 import com.jtemp.stage.net.NetServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -26,7 +26,7 @@ public class NettyTcpServer extends AbstractNetServer {
 
     @Override
     protected void start0() throws Exception {
-        final NettyTcpServer _this = this;
+        final NettyTcpServer server = this;
         bossEventLoopGroup = new NioEventLoopGroup(1, new NamedThreadFactory(name(), NettyHelper.isDaemon()));
         ServerBootstrap serverBootstrap = new ServerBootstrap();
         serverBootstrap.group(bossEventLoopGroup, NettyHelper.workerEventLoopGroup())
@@ -41,7 +41,7 @@ public class NettyTcpServer extends AbstractNetServer {
                     socketChannel.pipeline()
                         .addLast("decoder", new NettyProtocolDecoder())
                         .addLast("encoder", new NettyProtocolEncoder())
-                        .addLast("handler", new NettyServerHandler(handler, _this));
+                        .addLast("handler", new NettyServerHandler(handler, server));
                 }
             });
         int retry = 3;

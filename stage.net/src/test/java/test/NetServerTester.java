@@ -7,6 +7,8 @@ import com.jtemp.stage.net.protocol.NetConnection;
 import com.jtemp.stage.net.protocol.NetProtocol;
 import com.jtemp.stage.net.protocol.NetProtocolManager;
 
+import java.util.concurrent.Future;
+
 /**
  * @author ZMS
  * @Date 2018/11/8 2:17 PM
@@ -18,6 +20,11 @@ public class NetServerTester {
         NetProtocolManager.regiester(PingPackage.COMMAND_ID, PingPackage.class);
 
         NetServer netServer = NetServerFactory.createTcpServer(new NetServerHandler() {
+            @Override
+            public Future<NetProtocol> wrapRequestFuture(NetProtocol dataPackage) {
+                return null;
+            }
+
             @Override
             public void channelRead(NetConnection connection, NetProtocol dataPackage) {
                 if (dataPackage instanceof PingPackage) {

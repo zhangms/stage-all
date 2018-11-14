@@ -1,10 +1,15 @@
 package com.jtemp.stage.net.netty;
 
+import com.jtemp.stage.net.NetException;
+import com.jtemp.stage.net.NetHandler;
 import com.jtemp.stage.net.protocol.NetConnection;
 import com.jtemp.stage.net.protocol.NetProtocol;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerAdapter;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 /**
  * @author ZMS
@@ -18,6 +23,8 @@ public class NettyConnection extends ChannelHandlerAdapter implements NetConnect
 
     Channel channel;
 
+    NetHandler netHandler;
+
     ChannelFutureListener writeListener = channelFuture -> {
         if (!channelFuture.isSuccess()) {
             if (!channel.isActive()) {
@@ -26,12 +33,17 @@ public class NettyConnection extends ChannelHandlerAdapter implements NetConnect
         }
     };
 
+    public NettyConnection(Channel channel, NetHandler netHandler) {
+        this.channel = channel;
+        this.netHandler = netHandler;
+    }
+
     public Channel getChannel() {
         return channel;
     }
 
-    public NettyConnection(Channel channel) {
-        this.channel = channel;
+    public NetHandler getNetHandler() {
+        return netHandler;
     }
 
     @Override
@@ -45,6 +57,18 @@ public class NettyConnection extends ChannelHandlerAdapter implements NetConnect
             lastSendAt = System.currentTimeMillis();
             channel.writeAndFlush(dataPackage).addListener(writeListener);
         }
+    }
+
+    @Override
+    public Future<NetProtocol> futureInvoke(NetProtocol dataPackage) {
+        if (channel != null) {
+            lastSendAt = System.currentTimeMillis();
+            channel.writeAndFlush(dataPackage).addListener(writeListener);
+            return netHandler.wrapRequestFuture(dataPackage);
+        }
+        CompletableFuture<NetProtocol> ret = new CompletableFuture<>();
+        ret.completeExceptionally(new NetException("netty channel is null"));
+        return ret;
     }
 
     @Override

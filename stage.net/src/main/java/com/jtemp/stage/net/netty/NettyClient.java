@@ -11,6 +11,9 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -25,7 +28,7 @@ public class NettyClient implements NetClient {
 
     private NetUrl url;
 
-    NetConnection connection;
+    private volatile NetConnection connection;
 
     public NettyClient(NetClientHandler handler) {
         this.handler = handler;
@@ -41,7 +44,7 @@ public class NettyClient implements NetClient {
     }
 
     private void connect0(NetUrl url) throws NetException {
-        NettyClient _this = this;
+        NettyClient client = this;
         this.url = url;
         final Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(NettyHelper.workerEventLoopGroup())
@@ -54,7 +57,7 @@ public class NettyClient implements NetClient {
                 protected void initChannel(SocketChannel socketChannel) throws Exception {
                     socketChannel.pipeline().addLast("decoder", new NettyProtocolDecoder())
                         .addLast("encoder", new NettyProtocolEncoder())
-                        .addLast("handler", new NettyClientHandler(handler, _this));
+                        .addLast("handler", new NettyClientHandler(handler, client));
                 }
             });
 
@@ -66,7 +69,14 @@ public class NettyClient implements NetClient {
         boolean sync = url.getParameter(NetConstants.KEY_CONNECT_SYNC, NetConstants.DEF_CONNECTION_SYNC);
         if (sync) {
             if (future.awaitUninterruptibly(connectTimeout) && future.isSuccess() && future.channel().isActive()) {
-                return;
+                int retryTime = 0;
+                while (retryTime < connectTimeout && connection == null) {
+                    retryTime = +100;
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(100);
+                    } catch (InterruptedException e) {
+                    }
+                }
             } else {
                 future.cancel(true);
                 future.channel().close();
@@ -78,15 +88,14 @@ public class NettyClient implements NetClient {
                 if (future1.isSuccess() && future1.channel().isActive()) {
                     return;
                 }
-                _this.close();
+                client.close();
                 throw new NetException("netty client connect failed:" + url.toString());
             });
         }
     }
 
-    protected NettyClient setConnection(NetConnection connection) {
+    protected void setConnection(NetConnection connection) {
         this.connection = connection;
-        return this;
     }
 
     @Override
@@ -107,5 +116,19 @@ public class NettyClient implements NetClient {
         if (connected.get() && connection != null) {
             connection.send(dataPackage);
         }
+    }
+
+    @Override
+    public Future<NetProtocol> futureInvoke(NetProtocol dataPackage) {
+        if (connected.get() && connection != null) {
+            return connection.futureInvoke(dataPackage);
+        }
+        CompletableFuture<NetProtocol> ret = new CompletableFuture<>();
+        if (!connected.get()) {
+            ret.completeExceptionally(new NetException("not connected"));
+        } else if (connection == null) {
+            ret.completeExceptionally(new NetException("connection is null"));
+        }
+        return ret;
     }
 }

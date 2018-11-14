@@ -31,7 +31,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<NetProtocol>
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
-        NetConnection connection = new NettyConnection(ctx.channel());
+        NetConnection connection = new NettyConnection(ctx.channel(), handler);
         client.setConnection(connection);
         handler.channelActive(client);
     }
@@ -40,5 +40,11 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<NetProtocol>
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
         handler.channelInactive(client);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        super.exceptionCaught(ctx, cause);
+        cause.printStackTrace();
     }
 }

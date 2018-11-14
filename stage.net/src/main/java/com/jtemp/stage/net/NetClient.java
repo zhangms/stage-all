@@ -3,6 +3,8 @@ package com.jtemp.stage.net;
 import com.jtemp.stage.net.protocol.NetConnection;
 import com.jtemp.stage.net.protocol.NetProtocol;
 
+import java.util.concurrent.Future;
+
 /**
  * @author ZMS
  * @Date 2018/10/13 10:35 AM
@@ -35,4 +37,7 @@ public interface NetClient {
      * @param dataPackage
      */
     void send(NetProtocol dataPackage);
+
+    Future<NetProtocol> futureInvoke(NetProtocol dataPackage);
+
 }

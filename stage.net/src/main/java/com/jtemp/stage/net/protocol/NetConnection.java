@@ -1,5 +1,7 @@
 package com.jtemp.stage.net.protocol;
 
+import java.util.concurrent.Future;
+
 /**
  * @author ZMS
  * @Date 2018/10/13 10:35 AM
@@ -26,4 +28,12 @@ public interface NetConnection {
      * @return
      */
     long getLastReceiveAt();
+
+    /**
+     * 调用
+     *
+     * @param dataPackage
+     * @return
+     */
+    Future<NetProtocol> futureInvoke(NetProtocol dataPackage);
 }

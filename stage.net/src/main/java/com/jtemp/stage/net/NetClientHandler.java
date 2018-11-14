@@ -7,7 +7,7 @@ import com.jtemp.stage.net.protocol.NetProtocol;
  * @author ZMS
  * @Date 2018/11/7 9:02 PM
  */
-public interface NetClientHandler {
+public interface NetClientHandler extends NetHandler {
 
     void channelActive(NettyClient client);
 
